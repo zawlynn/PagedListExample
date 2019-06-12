@@ -1,6 +1,4 @@
-package com.zawlynn.udacity.pagedlistexample.ui.main.datasource;
-
-import android.util.Log;
+package com.zawlynn.udacity.pagedlistexample.data.datasource;
 
 import androidx.annotation.NonNull;
 import androidx.paging.PageKeyedDataSource;
@@ -10,7 +8,6 @@ import com.zawlynn.udacity.pagedlistexample.data.ApiService;
 import com.zawlynn.udacity.pagedlistexample.data.model.Article;
 
 import io.reactivex.Flowable;
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -19,20 +16,23 @@ import io.reactivex.schedulers.Schedulers;
 public class FeedDataSource extends PageKeyedDataSource<Long, Article> implements Constants {
     private ApiService apiService;
     private static final String TAG = "FeedDataSource";
-    private Disposable disposable=new CompositeDisposable();
-    public FeedDataSource(ApiService apiService) {
+    private Disposable disposable = new CompositeDisposable();
+
+    FeedDataSource(ApiService apiService) {
         this.apiService = apiService;
     }
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Long> params, @NonNull LoadInitialCallback<Long, Article> callback) {
-        disposable= Flowable.defer(() -> apiService.fetchFeed(QUERY, API_KEY, 1, params.requestedLoadSize)
+        disposable = Flowable.defer(() -> apiService.fetchFeed(QUERY, API_KEY, 1, params.requestedLoadSize)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .onErrorReturn(throwable -> {
                     throw Exceptions.propagate(throwable);
                 })).subscribe(response -> {
-            callback.onResult(response.body().getArticles(), null, 2l);
+            if (response.body() != null) {
+                callback.onResult(response.body().getArticles(), null, 2l);
+            }
         });
     }
 
@@ -44,7 +44,7 @@ public class FeedDataSource extends PageKeyedDataSource<Long, Article> implement
     @Override
     public void loadAfter(@NonNull LoadParams<Long> params, @NonNull LoadCallback<Long, Article> callback) {
 
-       disposable= Flowable.defer(() -> apiService.fetchFeed(QUERY, API_KEY, params.key, params.requestedLoadSize)
+        disposable = Flowable.defer(() -> apiService.fetchFeed(QUERY, API_KEY, params.key, params.requestedLoadSize)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .onErrorReturn(throwable -> {
@@ -54,7 +54,8 @@ public class FeedDataSource extends PageKeyedDataSource<Long, Article> implement
             callback.onResult(response.body().getArticles(), nextKey);
         });
     }
-    void clear(){
+
+    void clear() {
         disposable.dispose();
     }
 }

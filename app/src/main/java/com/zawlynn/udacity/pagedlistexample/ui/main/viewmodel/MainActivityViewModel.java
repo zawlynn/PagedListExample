@@ -1,22 +1,18 @@
 package com.zawlynn.udacity.pagedlistexample.ui.main.viewmodel;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
 import com.zawlynn.udacity.pagedlistexample.ArticleApplication;
 import com.zawlynn.udacity.pagedlistexample.data.ApiService;
-import com.zawlynn.udacity.pagedlistexample.data.database.ArticleDatabase;
 import com.zawlynn.udacity.pagedlistexample.data.database.dao.ArticleDao;
 import com.zawlynn.udacity.pagedlistexample.data.model.Article;
-import com.zawlynn.udacity.pagedlistexample.data.network.ArticleRepository;
-import com.zawlynn.udacity.pagedlistexample.ui.main.datasource.FeedDataFactory;
+import com.zawlynn.udacity.pagedlistexample.data.datasource.FeedDataFactory;
 
 
 import javax.inject.Inject;
@@ -35,7 +31,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         ArticleApplication.getInstance().getArticleComponent().inject(this);
         init();
     }
-    public void init(){
+    private void init(){
         feedDataFactory = FeedDataFactory.getInstance(apiService);
         PagedList.Config pagedListConfig = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)

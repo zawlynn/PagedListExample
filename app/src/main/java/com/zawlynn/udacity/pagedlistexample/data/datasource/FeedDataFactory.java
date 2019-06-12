@@ -1,4 +1,4 @@
-package com.zawlynn.udacity.pagedlistexample.ui.main.datasource;
+package com.zawlynn.udacity.pagedlistexample.data.datasource;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.DataSource;
@@ -7,7 +7,6 @@ import com.zawlynn.udacity.pagedlistexample.data.ApiService;
 
 public class FeedDataFactory extends DataSource.Factory {
 
-    private MutableLiveData<FeedDataSource> mutableLiveData=new MutableLiveData<>();
     private FeedDataSource feedDataSource;
     private ApiService apiService;
 
@@ -24,15 +23,10 @@ public class FeedDataFactory extends DataSource.Factory {
     @Override
     public DataSource create() {
         feedDataSource = new FeedDataSource(apiService);
-        mutableLiveData.postValue(feedDataSource);
         return feedDataSource;
     }
 
     public void dispose(){
         feedDataSource.clear();
-    }
-
-    public MutableLiveData<FeedDataSource> getMutableLiveData() {
-        return mutableLiveData;
     }
 }
